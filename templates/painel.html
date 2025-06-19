@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block conteudo %}
+<h2>Bem-vindo, {{ nome }}!</h2>
+<p>Usuário: <strong>{{ usuario }}</strong></p>
+<p>Status de pagamento: 
+  {% if pago == 1 %}
+    <span class="badge bg-success">Pago</span>
+  {% else %}
+    <span class="badge bg-danger">Não Pago</span>
+  {% endif %}
+</p>
+<a href="{{ url_for('historico') }}" class="btn btn-primary">Ver Histórico</a>
+<a href="{{ url_for('usuarios') }}" class="btn btn-secondary">Lista de Usuários</a>
+{% endblock %}
