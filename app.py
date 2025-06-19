@@ -4,10 +4,18 @@ import sqlite3
 import os
 
 app = Flask(__name__)
+<<<<<<< HEAD
 app.secret_key = 'vfitnes_secret_key_1234'
 
 DB_NAME = 'database.db'
 
+=======
+app.secret_key = 'vfitnes_secret_key_1234'  # Para mensagens flash
+
+DB_NAME = 'database.db'
+
+# --- Banco de dados ---
+>>>>>>> 08a1d8eaad5ee2a9a92bf7896969697f329c9003
 def conectar():
     conn = sqlite3.connect(DB_NAME)
     conn.row_factory = sqlite3.Row
@@ -17,15 +25,26 @@ def inicializar_banco():
     if not os.path.exists(DB_NAME):
         conn = conectar()
         cur = conn.cursor()
+<<<<<<< HEAD
+=======
+        # Usuários com status de pagamento (Pago ou Não Pago)
+>>>>>>> 08a1d8eaad5ee2a9a92bf7896969697f329c9003
         cur.execute('''
             CREATE TABLE usuarios (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 nome TEXT NOT NULL,
                 usuario TEXT UNIQUE NOT NULL,
                 senha TEXT NOT NULL,
+<<<<<<< HEAD
                 pago INTEGER DEFAULT 0
             )
         ''')
+=======
+                pago INTEGER DEFAULT 0 -- 0 = não pago, 1 = pago
+            )
+        ''')
+        # Acessos registrados (quem, data, hora)
+>>>>>>> 08a1d8eaad5ee2a9a92bf7896969697f329c9003
         cur.execute('''
             CREATE TABLE acessos (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -39,10 +58,19 @@ def inicializar_banco():
 
 inicializar_banco()
 
+<<<<<<< HEAD
+=======
+# --- Rotas ---
+
+>>>>>>> 08a1d8eaad5ee2a9a92bf7896969697f329c9003
 @app.route('/')
 def index():
     return redirect(url_for('login'))
 
+<<<<<<< HEAD
+=======
+# Cadastro
+>>>>>>> 08a1d8eaad5ee2a9a92bf7896969697f329c9003
 @app.route('/cadastro', methods=['GET', 'POST'])
 def cadastro():
     if request.method == 'POST':
@@ -70,6 +98,10 @@ def cadastro():
 
     return render_template('cadastro.html')
 
+<<<<<<< HEAD
+=======
+# Login
+>>>>>>> 08a1d8eaad5ee2a9a92bf7896969697f329c9003
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
@@ -88,14 +120,26 @@ def login():
             return redirect(url_for('login'))
     return render_template('login.html')
 
+<<<<<<< HEAD
+=======
+# Registrar acesso
+>>>>>>> 08a1d8eaad5ee2a9a92bf7896969697f329c9003
 def registrar_acesso(usuario):
     agora = datetime.now()
     conn = conectar()
     conn.execute('INSERT INTO acessos (usuario, horario, data) VALUES (?, ?, ?)',
+<<<<<<< HEAD
                  (usuario, agora.strftime('%H:%M:%S'), agora.strftime('%Y-%m-%d')))
     conn.commit()
     conn.close()
 
+=======
+                 (usuario, agora.strftime('%H:%M:%S'), agora.strftime('%d/%m/%Y')))
+    conn.commit()
+    conn.close()
+
+# Painel principal
+>>>>>>> 08a1d8eaad5ee2a9a92bf7896969697f329c9003
 @app.route('/painel/<usuario>')
 def painel(usuario):
     conn = conectar()
@@ -106,6 +150,7 @@ def painel(usuario):
         return redirect(url_for('login'))
     return render_template('painel.html', usuario=user['usuario'], nome=user['nome'], pago=user['pago'])
 
+<<<<<<< HEAD
 @app.route('/historico')
 def historico():
     conn = conectar()
@@ -132,6 +177,27 @@ def usuarios():
     conn.close()
     return render_template('usuarios.html', users=users, busca=busca)
 
+=======
+# Histórico - dividido geral e hoje
+@app.route('/historico')
+def historico():
+    conn = conectar()
+    hoje = datetime.now().strftime('%d/%m/%Y')
+    historico_geral = conn.execute('SELECT * FROM acessos ORDER BY usuario COLLATE NOCASE ASC, data DESC, horario DESC').fetchall()
+    historico_hoje = conn.execute('SELECT * FROM acessos WHERE data = ? ORDER BY usuario COLLATE NOCASE ASC, horario DESC', (hoje,)).fetchall()
+    conn.close()
+    return render_template('historico.html', historico_geral=historico_geral, historico_hoje=historico_hoje, hoje=hoje)
+
+# Lista usuários com status pagamento
+@app.route('/usuarios')
+def usuarios():
+    conn = conectar()
+    users = conn.execute('SELECT * FROM usuarios ORDER BY nome COLLATE NOCASE ASC').fetchall()
+    conn.close()
+    return render_template('usuarios.html', users=users)
+
+# Alterar status pagamento - simples toggle
+>>>>>>> 08a1d8eaad5ee2a9a92bf7896969697f329c9003
 @app.route('/alterar_pagamento/<usuario>')
 def alterar_pagamento(usuario):
     conn = conectar()
@@ -144,8 +210,16 @@ def alterar_pagamento(usuario):
     conn.close()
     return redirect(url_for('usuarios'))
 
+<<<<<<< HEAD
 @app.route('/enviar_aviso')
 def enviar_aviso():
+=======
+# Enviar aviso via WhatsApp (simulado)
+@app.route('/enviar_aviso')
+def enviar_aviso():
+    # Aqui você colocaria integração com API do WhatsApp (ex: Twilio, etc)
+    # Para demo, só imprime quem não pagou no console
+>>>>>>> 08a1d8eaad5ee2a9a92bf7896969697f329c9003
     conn = conectar()
     inadimplentes = conn.execute('SELECT nome, usuario FROM usuarios WHERE pago = 0').fetchall()
     conn.close()
@@ -153,9 +227,16 @@ def enviar_aviso():
     if not inadimplentes:
         flash('Todos estão pagos! Nenhum aviso enviado.')
     else:
+<<<<<<< HEAD
         for user in inadimplentes:
             print(f'[SIMULAÇÃO] Aviso enviado para {user["nome"]} ({user["usuario"]})')
         flash(f'Avisos simulados enviados para {len(inadimplentes)} inadimplentes.')
+=======
+        print('=== AVISOS para inadimplentes ===')
+        for user in inadimplentes:
+            print(f'Enviando mensagem para {user["nome"]} ({user["usuario"]}) no WhatsApp...')
+        flash(f'Aviso simulado enviado para {len(inadimplentes)} inadimplentes (veja no console).')
+>>>>>>> 08a1d8eaad5ee2a9a92bf7896969697f329c9003
 
     return redirect(url_for('usuarios'))
 
